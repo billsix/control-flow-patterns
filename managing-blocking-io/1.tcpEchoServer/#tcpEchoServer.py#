@@ -1,0 +1,23 @@
+import socket
+import os
+
+host = "127.0.0.1"
+port = 9999
+
+tcpsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+tcpsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+tcpsock.bind((host, port))
+
+tcpsock.listen(4)
+print("Listening for incoming connections...")
+(clientsock, (ip, port)) = tcpsock.accept()
+print("Connection initiated from : {0}:{1}".format(ip,str(port)))
+clientsock.send(("Welcome to the server" + os.linesep).encode())
+
+data = "ignore"
+while len(data):
+    data = clientsock.recv(2048)
+    print("Client({0}:{1}) sent : {2}".format(ip, str(port), data.decode()))
+    clientsock.send(("You sent me : "+data.decode()).encode())
+
+print("Client at {0} disconnected...".format(ip))
